@@ -1,0 +1,77 @@
+services:
+  dopaminebench:
+    build:
+      context: .
+      dockerfile: Dockerfile.dopaminebench
+    working_dir: /workspace
+    volumes:
+      - investigations_data:/workspace/investigations
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    tty: true
+    stdin_open: true
+    command: >
+      sh -c 'opencode run <<"EOF"
+      IMPORTANT: when unsure about api and types or facing compilation errors, always ask detailed specific question to `opentuihelp_investigate` for help getting out of uncertainty or compilation predicament. Management has *prohibited* node_modules inspection. You may only ever use `opentuihelp_investigate` to understand the types, api, afforances and so on of the opentui codebase. I REPEAT always ask `opentuihelp_investigate` when your rate of progress has declined or you have hit a wall in compilation or anything else.
+
+      **System Role:**
+      You are an expert Frontend Engineer specializing in CLI/TUI (Terminal User Interface) applications. You possess deep knowledge of React and the specific constraints of rendering to a terminal buffer.
+
+      **The Task:**
+      Create a single-file, "dopamine-inducing" To-Do List application using the **@opentui/react** library. Your goal is to build a benchmark-quality TUI that balances utility with high user engagement.
+
+      **Tech Stack Constraints:**
+
+      * **Library:** `@opentui/react` (and `@opentui/core`).
+      * **Language:** TypeScript (TSX).
+      * **Runtime:** Bun or Node.js.
+      * **Environment:** The app must run in a terminal. NO HTML/CSS. Use strictly `<box>` and `<text>` components with flexbox-like props (`flexDirection`, `justifyContent`, `padding`).
+      * **Styling:** Use ANSI-safe styling. No arbitrary hex codes unless safely handled; prefer named colors or standard ANSI rendering.
+      * **Entry Point:** Use `createCliRenderer` and `createRoot` (modern API).
+
+      **Functional Requirements:**
+
+      1. **The "Focus Zone":** A main area showing active tasks.
+      2. **The "Dopamine Hit":** Implement a visual reward mechanism that triggers immediately upon task completion to provide positive reinforcement. This must be more than just removing the item from the list.
+      3. **Keyboard-First Navigation:**
+      * `Up`/`Down` arrows to navigate the list.
+      * `Space`/`Enter` to complete a task.
+      * `Q` or `Ctrl+C` to quit.
+
+
+      4. **Reactive State:** The UI must update instantly. Include dynamic metrics that track user progress.
+
+      **Creative Requirements:**
+
+      * **Visual Theme:** Develop a distinct and cohesive visual theme for the application.
+      * **Delight Feature:** Implement a unique feature designed specifically to enhance user engagement or enjoyment beyond the standard utility of a list.
+      * **Vitality:** The application should feel responsive and "alive," avoiding the static feel of a standard command-line output.
+
+      **Output:**
+      Provide the full, runnable `src/index.tsx` file. Assume the project is already scaffolded with `bun create tui` (start by the looking at the local source files to understand the scaffold).
+
+      IMPORTANT: when unsure about api and types or facing compilation errors, always ask detailed specific question to `opentuihelp_investigate` for help getting out of uncertainty or compilation predicament. Management has *prohibited* node_modules inspection. You may only ever use `opentuihelp_investigate` to understand the types, api, afforances and so on of the opentui codebase. I REPEAT always ask `opentuihelp_investigate` when your rate of progress has declined or you have hit a wall in compilation or anything else.
+
+      IMPORTANT: when unsure about api and types or facing compilation errors, always ask detailed specific question to `opentuihelp_investigate` for help getting out of uncertainty or compilation predicament. Management has *prohibited* node_modules inspection. You may only ever use `opentuihelp_investigate` to understand the types, api, afforances and so on of the opentui codebase. I REPEAT always ask `opentuihelp_investigate` when your rate of progress has declined or you have hit a wall in compilation or anything else.
+
+      IMPORTANT: when unsure about api and types or facing compilation errors, always ask detailed specific question to `opentuihelp_investigate` for help getting out of uncertainty or compilation predicament. Management has *prohibited* node_modules inspection. You may only ever use `opentuihelp_investigate` to understand the types, api, afforances and so on of the opentui codebase. I REPEAT always ask `opentuihelp_investigate` when your rate of progress has declined or you have hit a wall in compilation or anything else.
+
+      IMPORTANT: when unsure about api and types or facing compilation errors, always ask detailed specific question to `opentuihelp_investigate` for help getting out of uncertainty or compilation predicament. Management has *prohibited* node_modules inspection. You may only ever use `opentuihelp_investigate` to understand the types, api, afforances and so on of the opentui codebase. I REPEAT always ask `opentuihelp_investigate` when your rate of progress has declined or you have hit a wall in compilation or anything else.
+
+      IMPORTANT: when unsure about api and types or facing compilation errors, always ask detailed specific question to `opentuihelp_investigate` for help getting out of uncertainty or compilation predicament. Management has *prohibited* node_modules inspection. You may only ever use `opentuihelp_investigate` to understand the types, api, afforances and so on of the opentui codebase. I REPEAT always ask `opentuihelp_investigate` when your rate of progress has declined or you have hit a wall in compilation or anything else.
+      EOF'
+
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.mcp
+    working_dir: /app
+    ports:
+      - "8000:8000"
+    volumes:
+      - investigations_data:/opentui/investigations
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  investigations_data:

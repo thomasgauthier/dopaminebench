@@ -1,0 +1,87 @@
+FROM oven/bun
+
+WORKDIR /workspace
+
+RUN apt-get update && apt-get install -y curl build-essential xvfb xterm scrot fonts-dejavu locales x11-utils patch libx11-dev libxft-dev && rm -rf /var/lib/apt/lists/*
+
+RUN curl -L https://dl.suckless.org/st/st-0.9.3.tar.gz -o st.tar.gz && \
+    tar -xzf st.tar.gz && \
+    rm st.tar.gz
+
+COPY st-catppuccin.diff /tmp/st-catppuccin.diff
+
+RUN cd st-0.9.3 && \
+    patch -Np1 < /tmp/st-catppuccin.diff && \
+    make install clean
+
+RUN bun install -g opencode-ai
+
+RUN mkdir -p /root/.config/opencode && cat > /root/.config/opencode/opencode.json << 'EOF'
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "litellm": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "ooba",
+      "options": {
+       "baseURL": "http://host.docker.internal:8080/v1"
+      },
+      "models": {
+        "glm-4.7-flash": {
+          "name": "glm-4.7-flash"
+        }
+      }
+    }
+  },
+  "mcp": {
+    "opentuihelp": {
+      "type": "remote",
+      "url": "http://mcp-server:8000/mcp",
+      "timeout": 3600000
+    }
+  },
+  "disabled_providers": [
+    "opencode"
+  ]
+}
+EOF
+
+RUN mkdir -p /root/.config/opencode/plugins && cat > /root/.config/opencode/plugins/OpentuiGuardPlugin.ts << 'EOF'
+import type { Plugin } from "@opencode-ai/plugin"
+
+export const OpentuiGuardPlugin: Plugin = async () => {
+  const FORBIDDEN_PATH = "node_modules/@opentui";
+  const BLOCK_MESSAGE = `Management has *prohibited* node_modules/@opentui/** inspection. Please use \`opentuihelp_investigate\` to understand the types, api, affordances and so on of the opentui codebase.`;
+
+  const SHELL_TOOLS = ["bash"]; 
+  const READ_TOOLS = ["read"];   
+
+  return {
+    "tool.execute.before": async (input, output) => {
+      const { tool } = input;
+      const args = output.args || {};
+
+      if (SHELL_TOOLS.includes(tool)) {
+        const command = (args.command || "").toString();
+
+        if (command.includes(FORBIDDEN_PATH)) {
+          throw new Error(BLOCK_MESSAGE);
+        }
+      }
+
+      if (READ_TOOLS.includes(tool)) {
+        const filePath = (args.filePath || "").toString();
+
+        if (filePath.includes(FORBIDDEN_PATH)) {
+          throw new Error(BLOCK_MESSAGE);
+        }
+      }
+    },
+  }
+} 
+EOF
+
+COPY bench /workspace
+RUN bun install
+
+CMD ["bash"]

@@ -1,0 +1,35 @@
+# Virtual environment
+.venv/
+env/
+venv/
+__pypackages__/
+*venv*/
+
+# Python bytecode and cache files
+*.pyc
+__pycache__/
+.pytest_cache/
+
+# IDE-specific files (e.g., VS Code, PyCharm)
+.idea/
+.vscode/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Logs and databases (adjust as needed)
+*.log
+*.sqlite
+*.db
+instance/
+
+# OS generated files
+.DS_Store
+.directory
+
+# Dependency lock files (include if using pipenv, poetry, or pdm, but often committed to version control)
+# Pipfile.lock
+# poetry.lock
+# pdm.lock
